@@ -38,7 +38,7 @@ The Dart server was built and tested on MacOS (Big Sur) on a Mac Mini.  It shoul
 **The companion Flutter/Dart applications implement the following flow:**
 
 <p align="center">
-  <img src="auth_flow.png">
+  <img src="auth_flow.jpg">
 </p>
 
 ### Flow steps (match step number to image indicators):

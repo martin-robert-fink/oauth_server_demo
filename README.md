@@ -3,7 +3,7 @@
 If you want to get the server up and running now, go to [Setup](#Setup)
 ## <b>Background</b>
 
-The first step in most client applications is to provide authentication for the user.  When I wanted to add authentication with identity providers through their **signin with _provider_**, I ran into the following issues:
+The first step in most client applications is to provide authentication for the end-user.  When I wanted to add authentication with identity providers through their **signin with _provider_**, I ran into the following issues:
 
 - All Flutter plugins were developed for mobile platforms.  There was no support for the Desktop
 - Each plugin was different in the implementation
@@ -11,9 +11,9 @@ The first step in most client applications is to provide authentication for the 
 - Some of the plugins would expose client_id and/or client_secret in client code
 - Virtually all online tutorials to help with the signin process assumed the use of the Firebase authentication backend
 
-I therefore decided to implement my own authentication client/server from the ground up that would across mobile and desktop, would not require the Firebase backend, and would support **Signin with _Google_, _Github_, _Facebook_, and _Apple_**.
+I therefore decided to implement my own OATH2 authentication client/server from the ground up that would work across mobile and desktop, would not require the Firebase backend, and would support **Signin with _Google_, _Github_, _Facebook_, and _Apple_**.
 
-This end-result is an authentication server written in Dart to act as a demonstrator to help others understand the complete OAuth2 web flow.  It has the the following features:
+The end-result is an authentication server written in Dart to act as a demonstrator to help others understand the complete OAuth2 web flow.  It has the the following features:
 
 - Multi-isolate SSL HTTP server
 - A WebSocket server to receive CSRF state information from the client
@@ -28,7 +28,7 @@ This end-result is an authentication server written in Dart to act as a demonstr
 - Allows user to authenticate using different providers on different devices/platforms
 - Periodic blacklist cleanup for expired tokens
 - Generates Apple client_secret using Apple provided private key
-- Asks as a basic API server for request to add/remove/list/count tasks in a MongoDB database
+- Acts as a basic API server for requests to add/remove/list/count tasks in a MongoDB database
 - A unit test suite for most of the application
 
 There is also a Flutter client that is the companion to this server which is responsible for initiating the authentication process.  The client Flutter app is also available on Github.

@@ -1,0 +1,9 @@
+.center_text {
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	text-align: center;
+}
+.center_logo {
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+}

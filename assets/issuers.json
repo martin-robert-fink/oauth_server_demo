@@ -1,0 +1,55 @@
+{
+    "google": {
+        "client_id": "GOOGLE CLIENT ID",
+        "client_secret": "GOOGLE CLIENT SECRET",
+        "auth_endpoint": "https://accounts.google.com/o/oauth2/v2/auth",
+        "token_endpoint": "https://oauth2.googleapis.com/token",
+        "refresh_endpoint": "https://oauth2.googleapis.com/token",
+        "user_info_endpoint": "https://www.googleapis.com/oauth2/v3/userinfo",
+        "token_check_endpoint": "https://oauth2.googleapis.com/tokeninfo",
+        "public_key_endpoint": "https://www.googleapis.com/oauth2/v3/certs",
+        "auth_redirect_url": "https://auth.YOURDOMAIN.com/v1/auth/google",
+        "auth_scopes": "https://www.googleapis.com/auth/userinfo.profile%20https://www.googleapis.com/auth/userinfo.email",
+        "profile_endpoint": "https://www.googleapis.com/oauth2/v1/userinfo?alt=json",
+        "email_endpoint": "https://www.googleapis.com/oauth2/v1/userinfo?alt=json"
+        },
+    "facebook": {
+        "client_id": "FACEBOOK CLIENT ID",
+        "client_secret": "FACEBOOK CLIENT SECRET",
+        "auth_endpoint": "https://www.facebook.com/v9.0/dialog/oauth",
+        "token_endpoint": "https://graph.facebook.com/v9.0/oauth/access_token",
+        "refresh_endpoint": "https://graph.facebook.com/v9.0/oauth/access_token",
+        "user_info_endpoint": "https://graph.facebook.com/v9.0/me?fields=id,name",
+        "token_check_endpoint": "https://graph.facebook.com/debug_token",
+        "auth_redirect_url": "https://auth.YOURDOMAIN.com/v1/auth/facebook",
+        "auth_scopes": "email",
+        "profile_endpoint": "https://graph.facebook.com/v9.0/me?fields=id,name,email",
+        "email_endpoint": "https://graph.facebook.com/v9.0/me?fields=email"
+        },
+    "github": {
+        "client_id": "GITHUB CLIENT ID",
+        "client_secret": "GITHUB CLIENT SECRET",
+        "auth_endpoint": "https://github.com/login/oauth/authorize",
+        "token_endpoint": "https://github.com/login/oauth/access_token",
+        "refresh_endpoint": "https://api.github.com/user",
+        "user_info_endpoint": "https://api.github.com/user",
+        "token_check_endpoint": "https://api.github.com/user",
+        "auth_redirect_url": "https://auth.YOURDOMAIN.com/v1/auth/github",
+        "auth_scopes": "read:user%20user:email",
+        "profile_endpoint": "https://api.github.com/user",
+        "email_endpoint": "https://api.github.com/user/emails"
+        },
+    "apple" : {
+        "client_id": "APPLE CLIENT ID",
+        "team_id": "APPLE TEAM ID",
+        "key_id": "APLLE KEY ID",
+        "audience": "https://appleid.apple.com",
+        "auth_endpoint": "https://appleid.apple.com/auth/authorize",
+        "token_endpoint": "https://appleid.apple.com/auth/token",
+        "refresh_endpoint": "https://appleid.apple.com/auth/token",
+        "public_key_endpoint": "https://appleid.apple.com/auth/keys",
+        "auth_redirect_url": "https://auth.YOURDOMAIN.com/v1/auth/apple",
+        "auth_scopes": "name%20email"
+        }
+}
+

@@ -1,0 +1,20 @@
+name: oauth_server_demo
+description: OAuth2 Server Demonstrator.
+# version: 1.0.0
+# homepage: https://www.example.com
+
+environment:
+  sdk: ">=2.10.0 <3.0.0"
+
+dependencies:
+  http: ^0.13.0
+  jose: ^0.3.0-nullsafety.2
+  uuid: 
+  path: ^1.8.0
+  mongo_dart:
+
+dev_dependencies:
+  pedantic: ^1.10.0
+  test: ^1.16.2
+  mockito: 
+  effective_dart:

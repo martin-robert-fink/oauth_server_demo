@@ -1,0 +1,17 @@
+const String ALGORITHM = 'ES256';
+const String APPLE_PRIVATE_KEY_FILE = 'apple_private_key.pem';
+const String APPLICATION_JSON = 'application/json';
+const String APPLICATION_URL_ENCODED = 'application/x-www-form-urlencoded';
+const String ASSETS = 'assets';
+const String BEARER = 'Bearer ';
+const String CURL = 'curl';
+const String DEFAULT_SRC = 'default-src \'self\'';
+const int FIVE_MINUTES = 300;
+const String JWT = 'jwt';
+const String HTML = 'html';
+const String KEYS = 'keys';
+const int ONE_DAY = 1;
+const String MAX_AGE = 'max-age=31536000; IncludeSubDomains; Preload';
+const String PUBLIC_KEY_FILE = 'ecdsa_public_key.pem';
+const String PRIVATE_KEY_FILE = 'ecdsa_private_key.pem';
+const int TWO_MONTHS = 60;

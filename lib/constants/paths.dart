@@ -1,0 +1,11 @@
+const String ADD = 'add';
+const String AUTH = 'auth';
+const String CLIENT_ID = 'clientid';
+const String COUNT = 'count';
+const String GET_ALL = 'getall';
+const String REFRESH = 'refresh';
+const String REVOKE = 'revoke';
+const String TASK = 'task';
+const String TEST = 'test';
+const String UPDATE = 'update';
+const String WSS = 'wss';

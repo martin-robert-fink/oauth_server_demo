@@ -1,6 +1,8 @@
 # <b>OAuth2 Demonstrator - Dart Server Component</b>
 
 If you want to get the server up and running now, go to [Setup](#Setup)
+
+This is the server demonstrator, you'll also need the [Flutter client](https://github.com/martin-robert-fink/oauth_client_demo) demonstrator.
 ## <b>Background</b>
 
 The first step in most client applications is to provide authentication for the end-user.  When I wanted to add authentication with identity providers through their **signin with _provider_**, I ran into the following issues:

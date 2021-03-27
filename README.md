@@ -25,7 +25,7 @@ The end-result is an authentication server written in Dart to act as a demonstra
 - Generate OpenID Connect id_token (JWT) for Github/Facebook secured with ECDSA keys
 - Validate Apple/Google id_token with internet public keys
 - Responds to server-to-server token revocation notifications from Apple/Facebook and logs those in a blacklist
-- Initite the refresh token flow when the client requests one
+- Initiate the refresh token flow when the client requests one
 - Maintains authenticated user information in a MongoDB database
 - Allows user to authenticate using different providers on different devices/platforms
 - Periodic blacklist cleanup for expired tokens
@@ -33,7 +33,7 @@ The end-result is an authentication server written in Dart to act as a demonstra
 - Acts as a basic API server for requests to add/remove/list/count tasks in a MongoDB database
 - A unit test suite for most of the application
 
-There is also a Flutter client that is the companion to this server which is responsible for initiating the authentication process.  The client Flutter app is also available on Github.
+There is also a Flutter client that is the companion to this server which is responsible for initiating the authentication process.  The client Flutter app is [here](https://github.com/martin-robert-fink/oauth_client_demo).
 
 The Dart server was built and tested on MacOS (Big Sur) on a Mac Mini.  It should build and run on any platform, but hasn't been tried/tested.
 <a name="Flow"></a>
@@ -48,7 +48,7 @@ The Dart server was built and tested on MacOS (Big Sur) on a Mac Mini.  It shoul
 2. The client will open a browser to get an authentication login screen from the chosen identity provider.
 3. The identity provider redirects to the Dart server with an authentication code and CSRF state value provided by the client in step 1.
 4. After the CSRF state is validated, the server sends the authentication code back to the identity provider in exchange for an access token.
-5. The identity provider responds with access token, a refresh token and a token expiration time.  Github/Facebook don't use refresh tokens.  Github access tokens do not expire.  Google and Apple also provide an OpenID Connect JSON Web Token as an id_token.
+5. The identity provider responds with access token, a refresh token and a token expiration time.  Github/Facebook don't use refresh tokens.  Github access tokens do not expire.  Google and Apple also provide an OpenID Connect JSON Web Token (JWT) as an id_token.
 6. The token data is used to extract user profile information and the user is created or updated in the user database
 7. An ID Token is generated for Github/Facebook.  An expiration of one day is added to the Github ID token to ensure we check with the Github server that the user is still authenticated.
 8. The Access Token, Refresh Token, and ID Token are sent back to the client on the WebSocket connection and the client stores those values locally.
@@ -57,31 +57,35 @@ The Dart server was built and tested on MacOS (Big Sur) on a Mac Mini.  It shoul
 11. The server uses the refresh token to request a new token from the identity provider.
 12. the identity provider responds with similar data as in step 5
 13. The new token data is updated and a new id token is generated as needed. Similar to step 6.
-14. The server sends an HTTP response to the GET request initiated in 10 with the new token data
+14. The server sends an HTTP response to the GET request initiated in step 10 with the new token data
 15. The client updates the stored token information and the API request proceeds as normal
 16. The API request (eg get all tasks) is issued as normal sending the id token (not the access token)
 17. The server receives the API request and checks the is token valid (there are a number of validity checks, included checking the blacklist)
 18. The server responds with the requested task data if the token is valid, or responds with an unauthorized status
-19. If the client gets an unauthorized status, immediatly navigates to the login screen for the user to re-authenticate.  If the the status is ok, and the request data is received, then the screen updates with the requested information
+19. If the client gets an unauthorized status, immediatly navigates to the login screen for the user to re-authenticate.  If the the status is ok, and the request data is received, then the screen updates with the requested information (the task list)
 
 # <a name="Setup"></a>Setup
 
 In order to get the server running, you'll need to ensure you have Dart installed and a MongoDB installation running as well.  You'll then need to go through the following setup steps:
 
 1. You'll need your own domain and have SSL keys setup for that domain.  I acquired a domain from Google and use the [Google Domain](https://domains.google) service for the DNS records.  I used [Let's Encrypt](https://letsencrypt.org) for my SSL keys and CA certificates. 
-2. Setup an application at each of the providers [Apple](https://developer.okta.com/blog/2019/06/04/what-the-heck-is-sign-in-with-apple), [Google](https://console.cloud.google.com/apis/credentials), [Facebook](https://developers.facebook.com/apps/), [Github](https://github.com/settings/developers).  For each provider you'll need to provide an *authorized redirect URI*, make sure you format it as `https://auth.yourdomain.com/v1/auth/provider`, where provider is one of `apple`, `google`, `github`, `facebook`.:
+2. Setup an application at each of the providers [Apple](https://developer.okta.com/blog/2019/06/04/what-the-heck-is-sign-in-with-apple), [Google](https://console.cloud.google.com/apis/credentials), [Facebook](https://developers.facebook.com/apps/), [Github](https://github.com/settings/developers).  For each provider you'll need to provide an *authorized redirect URI*, make sure you format it as `https://auth.yourdomain.com/v1/auth/<provider>`, where `provider` is one of `apple`, `google`, `github`, `facebook`.:
      - **Apple**: Read Aaron's article until the point where you download your private key file.  You need to rename the .p8 file you download to `apple_private_key.pem` and locate it in the `<project>/assets/keys` folder.  Also make sure you save your `keyId`, `clientId` and `teamId`.  You'll add them in the next dection.  You'll also fill in the `Server to Server Notification Endpoint` with `https://auth.yourdomain.com/v1/revoke/apple`.
 	- **Google**: Setup an OAuth2 client ID.  There are no javascript origins.  Keep a note with your `clientId` and your `clientSecret`.
-	- **Facebook**: When you setup your Facebook app, add Facebook login product.  Fill in the `Deauthorize Callback URL` with `https://auth.yourdomain.com/v1/revoke/facebook`.
+	- **Facebook**: When you setup your Facebook app, add Facebook login product.  Fill in the `Deauthorize Callback URL` with `https://auth.yourdomain.com/v1/revoke/facebook`. Note your `clientId` and `clientSecret`.
 	- **Github**: Create an OAuth2 app.  Write down your `clientId` and download your `clientSecret`.
 3. In the folder `<project>/assets/` open the `issuers.json` file.  For each of the providers, fill in the `clientId`, `keyId`, `teamId`, and `clientSecret` fields.  Note that not all providers require all fields.
 4. Also in the `issuers.json` file, fill in the `auth_redirect_url` field for each provider.  This field will match what you filled in as the *authorized redirect URI* at each provider in step 2.
-5. Generate a private/public key pair that will be used to sign id tokens for Github and Facebook.  The command to generate the private key is: `openssl ecparam -name prime256v1 -genkey -noout -out ecdsa_private_key.pem`.  Generate the public key from the private key using `openssl ec -in ecdsa_private_key.pem -pubout -out ecdsa_public_key.pem`.  Move both key files to the `<project>/assets/keys` folder.  You should end up with 3 files in the folder:  The apple private key, and the private/public key files you just generated.  I recommend you set the ownership for each of the key files to `root` and set the files as `read-only`.
+5. Generate a private/public key pair that will be used to sign id tokens for Github and Facebook.   
+   - The command to generate the private key is: `openssl ecparam -name prime256v1 -genkey -noout -out ecdsa_private_key.pem`.
+   - Generate the public key from the private key using: `openssl ec -in ecdsa_private_key.pem -pubout -out ecdsa_public_key.pem`.  
+   - Move both key files to the `<project>/assets/keys` folder.  You should end up with 3 files in the folder:  The apple private key, and the private/public key files you just generated.  
+   - I recommend you set the ownership for each of the key files to `root` and set the files as `read-only`.
 6. Finally, you'll setup a number of constants that are specific to your installation.  All of the constants are located in files in the `<project>/lib/constants` folder.
     - In the `database.dart` file, set the `DB_HOST`, and `DB_PORT` to match your MongoDB installation.  Feel free to pick a different name for the database in `DB_NAME`.
-    - In the `hosts.dart` file, set each of the `XXX_HOST` constants to match your domain name.  Make sure you keep the `auth`, `www`, `api` prefixes for the hosts.
+    - In the `hosts.dart` file, set each of the `XXX_HOST` constants to match your domain name.
     - In the `server.dart` file, setup the location of your SSL certificates.  If you did you [Let's Encrypt](https://letsencrypt.org), then `BASE_KEY_PATH` will most likely look something like `/Users/<user>/letsencrypt/config/live`.  `KEY_DOMAIN` will most likely match your `DOMAIN_HOST` constant from the `hosts.dart` file. Set the `CUSTOM_SCHEME` constant to also match your domain.  This will need to match your custom URI that will be setup on the Flutter client.
-7. A few changes in the test suite.  In the folder `<project>/test`, look in the file `router_test.dart` and change the `HEADERS_HOST` and the `HOST` constants to matchs your domain.  Also in `socket_server_test.dart` look for `headers: {'host': 'api.YOURDOMAIN.com'}` entry and change it to make your domain.
+7. A few changes in the test suite.  In the folder `<project>/test`, look in the file `router_test.dart` and change the `HEADERS_HOST` and the `HOST` constants to matchs your domain.  Also in `socket_server_test.dart` look for `headers: {'host': 'api.YOURDOMAIN.com'}` entry and change it to match your domain.
 
 That should complete the setup and you should be ready to run the server.  A good way to make sure setup is ok, is to just run the test suite and make sure everything passes.  You'll notice that the `<project>/bin` folder has a `run.sh` file.  That's simply a convenience to run the server using `sudo`.  Since all the SSL keys are installed in `root` protected locations, the server needs to run as `root`.  If the server were to run in production, it would be a daemon spawned at server startup also as `root`.  I just open a terminal window in VSCode, and type `bin/run.sh`.  You should get a list of API Servers started (based on the number of hardware threads your system has) and the server is now ready to start processing `auth` and `api` requests from the client.
 
@@ -119,7 +123,7 @@ When Apple/Facebook send a notification that a user has revoked a token, that to
 
 # Database functions
 
-There are three document collections in the database: `blacklist` (described above), `users`, and `tasks`.  Whenever a new user is authenticated, and new user entry is added to the `users` document collection.  There is no mechanism to remove users or any associated user data (tasks) from the database at this time.  A user can authenticate using different social providers on different devices.  The user's email address is used as the link point.  Token data is only kept at each client, not on the server.
+There are three document collections in the database: `blacklist` (described above), `users`, and `tasks`.  Whenever a new user is authenticated, a new user entry is added to the `users` document collection.  There is no mechanism to remove users or any associated user data (tasks) from the database at this time.  A user can authenticate using different social providers on different devices.  The user's email address is used as the link point.  Token data is only kept at each client, not on the server.
 
 For demonstration purposes only, a `tasks` collection is used to show how token validation occurs with each API call.  The thought process behind this server is that ONLY valid calls should come in.  The companion Flutter client will ensure that a token has not expired before initiating an API call.  If it's expired, then a refresh request is made before attempting an API call.  In the end, every single API call is checked, but should rarely (if evver) be rejected.  The request/token validation is located in `<project>/lib/router/validate.dart`
 

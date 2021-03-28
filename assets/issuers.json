@@ -42,7 +42,7 @@
     "apple" : {
         "client_id": "APPLE CLIENT ID",
         "team_id": "APPLE TEAM ID",
-        "key_id": "APLLE KEY ID",
+        "key_id": "APPLE KEY ID",
         "audience": "https://appleid.apple.com",
         "auth_endpoint": "https://appleid.apple.com/auth/authorize",
         "token_endpoint": "https://appleid.apple.com/auth/token",

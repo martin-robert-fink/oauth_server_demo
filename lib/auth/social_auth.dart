@@ -140,7 +140,8 @@ abstract class SocialAuth {
   /// It gets the refreshToken from the issuer, the constructs the
   /// remaining parts (eg idToken if needed) and sends back the
   /// refreshed token to the client.
-  Future<void> refreshToken() async {
+  Future<void> refreshToken(HttpRequest request) async {
+    req = request;
     var response = await getRefreshToken();
     req.response.statusCode = response.statusCode;
     if (response.statusCode != HttpStatus.ok) return;

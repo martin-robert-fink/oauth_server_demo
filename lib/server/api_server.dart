@@ -77,7 +77,11 @@ class ApiServer {
       MessageBroker.sendPorts = message;
     } else if (message is String) {
       var tokenData = jsonDecode(message);
-      _findSocketServerWith(tokenData[kc.STATE])?.send(tokenData: tokenData);
+      var socketServer = _findSocketServerWith(tokenData[kc.STATE]);
+      if (socketServer != null) {
+        socketServer.send(tokenData: tokenData);
+        socketServers.remove(socketServer);
+      }
     } else if (message is Map<String, SendPort>) {
       var state = message.keys.first;
       var sendPort = message.values.first;
